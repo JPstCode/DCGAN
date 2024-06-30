@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 import torch
 import torch.utils.data
 import torch.nn as nn
@@ -104,8 +105,29 @@ def training_loop(
                         D_G_z2,
                     )
                 )
-                torch.save(netD.state_dict(), r"C:\tmp\DCGAN\models\discriminator.pt")
-                torch.save(netG.state_dict(), r"C:\tmp\DCGAN\models\generator.pt")
+                torch.save(netD.state_dict(), r"C:\tmp\DCGAN\models\shape\discriminator.pt")
+                torch.save(netG.state_dict(), r"C:\tmp\DCGAN\models\shape\generator.pt")
+
+                with torch.no_grad():
+                    fake = netG(fixed_noise).detach().cpu()
+
+                try:
+                    plt.figure()
+                    # Save fakes
+                    for i in range(9):
+                        fake_img = fake[i]
+                        image_np = fake_img.numpy()
+                        image_np = image_np.transpose(1, 2, 0)
+                        plt.subplot(3, 3, i + 1)
+                        plt.imshow(image_np)
+
+                    plt.savefig(
+                        fr"C:\tmp\DCGAN\models\shape\images\{epoch}.png"
+                    )
+                    plt.close()
+                except Exception:
+                    pass
+
 
             # Save Losses for plotting later
             G_losses.append(errG.item())
